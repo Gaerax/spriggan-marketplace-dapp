@@ -1,3 +1,3 @@
-[submodule "src/gosti-shared"]
-	path = src/gosti-shared
-	url = https://github.com/Gosti-Network/gosti-shared.git
+[submodule "src/slime-shared"]
+	path = src/slime-shared
+	url = https://github.com/Slime-Network/slime-shared.git

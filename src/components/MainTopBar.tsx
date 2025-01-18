@@ -1,4 +1,3 @@
-
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import { Autocomplete, TextField } from '@mui/material';
@@ -12,11 +11,10 @@ import { styled, alpha } from '@mui/material/styles';
 import { SessionTypes } from '@walletconnect/types';
 import React, { useState } from 'react';
 
-import { AddMarketplaceModal } from '../gosti-shared/components/AddMarketplaceModal';
-import WalletConnectMenu from '../gosti-shared/components/WalletConnectMenu';
-import { useGostiApi } from '../gosti-shared/contexts/GostiApiContext';
-import ThemeSwitcher from "./ThemeSwitcher";
-
+import { AddMarketplaceModal } from '../slime-shared/components/AddMarketplaceModal';
+import WalletConnectMenu from '../slime-shared/components/WalletConnectMenu';
+import { useSlimeApi } from '../slime-shared/contexts/SlimeApiContext';
+import ThemeSwitcher from './ThemeSwitcher';
 
 const Search = styled('div')(({ theme }) => ({
 	position: 'relative',
@@ -62,13 +60,11 @@ export default function PrimarySearchAppBar(
 	session: SessionTypes.Struct | undefined,
 	connectToWallet: () => void,
 	disconnectFromWallet: () => void,
-	setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
+	setSearchTerm: React.Dispatch<React.SetStateAction<string>>
 ) {
-
 	const [anchor2El, setAnchor2El] = useState<null | HTMLElement>(null);
 	const isMainMenuOpen = Boolean(anchor2El);
 	const [addMarketplaceModalOpen, setAddMarketplaceModalOpen] = useState<boolean>(false);
-
 
 	const openAppMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
 		setAnchor2El(event.currentTarget);
@@ -77,8 +73,7 @@ export default function PrimarySearchAppBar(
 		setAnchor2El(null);
 	};
 
-	const { gostiConfig, setGostiConfig } = useGostiApi();
-
+	const { slimeConfig, setSlimeConfig } = useSlimeApi();
 
 	const mainMenuId = 'primary-search-main';
 	const renderMainMenu = (
@@ -120,29 +115,25 @@ export default function PrimarySearchAppBar(
 						id={`marketplaces-select`}
 						clearIcon={null}
 						sx={{ width: 300, padding: 4 }}
-						options={gostiConfig.marketplaces.map((marketplace) => marketplace.displayName).concat("Add New Marketplace") ?? []}
-						value={gostiConfig.activeMarketplace.displayName ?? "Gosti Marketplace"}
-						onChange={
-							(event: any, value: string | null) => {
-								gostiConfig.marketplaces.forEach((marketplace) => {
-									if (marketplace.displayName === value || (value === "" && gostiConfig.activeMarketplace.displayName === marketplace.displayName)) {
-										gostiConfig.activeMarketplace = marketplace;
-										setGostiConfig({ ...gostiConfig });
-									}
-								});
-								if (value === "Add New Marketplace") {
-									setAddMarketplaceModalOpen(true);
-								}
-							}
+						options={
+							slimeConfig?.marketplaces.map((marketplace) => marketplace.displayName).concat('Add New Marketplace') ?? []
 						}
-						renderInput={(params) => (
-							<TextField
-								{...params}
-								label="Active Marketplace"
-								placeholder="Active Marketplace"
-							/>
-						)}
-
+						value={slimeConfig?.activeMarketplace.displayName ?? 'Slime Marketplace'}
+						onChange={(event: any, value: string | null) => {
+							slimeConfig?.marketplaces.forEach((marketplace) => {
+								if (
+									marketplace.displayName === value ||
+									(value === '' && slimeConfig.activeMarketplace.displayName === marketplace.displayName)
+								) {
+									slimeConfig.activeMarketplace = marketplace;
+									setSlimeConfig({ ...slimeConfig });
+								}
+							});
+							if (value === 'Add New Marketplace') {
+								setAddMarketplaceModalOpen(true);
+							}
+						}}
+						renderInput={(params) => <TextField {...params} label="Active Marketplace" placeholder="Active Marketplace" />}
 					/>
 					<Search>
 						<SearchIconWrapper>
@@ -155,19 +146,17 @@ export default function PrimarySearchAppBar(
 								if (event.target.value !== undefined) {
 									setSearchTerm(event.target.value);
 								} else {
-									setSearchTerm("");
+									setSearchTerm('');
 								}
 							}}
 						/>
 					</Search>
 					<Box sx={{ flexGrow: 1 }} />
-					<Box sx={{ display: { xs: 'flex' } }}>
-						{WalletConnectMenu(session, connectToWallet, disconnectFromWallet)}
-					</Box>
+					<Box sx={{ display: { xs: 'flex' } }}>{WalletConnectMenu(session, connectToWallet, disconnectFromWallet)}</Box>
 				</Toolbar>
 			</AppBar>
 			{renderMainMenu}
-			{AddMarketplaceModal(addMarketplaceModalOpen, () => { setAddMarketplaceModalOpen(false); })}
+			<AddMarketplaceModal open={addMarketplaceModalOpen} setOpen={setAddMarketplaceModalOpen} />
 		</Box>
 	);
 }
